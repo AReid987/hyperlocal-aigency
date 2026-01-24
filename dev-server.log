@@ -1,0 +1,26 @@
+npm warn Unknown env config "python". This will stop working in the next major version of npm.
+
+> project@0.1.0 dev
+> next dev
+
+  ▲ Next.js 14.2.35
+  - Local:        http://localhost:3000
+  - Environments: .env.local
+
+ ✓ Starting...
+Attention: Next.js now collects completely anonymous telemetry regarding usage.
+This information is used to shape Next.js' roadmap and prioritize features.
+You can learn more, including how to opt-out if you'd not like to participate in this anonymous program, by visiting the following URL:
+https://nextjs.org/telemetry
+
+ ✓ Ready in 2.1s
+ ○ Compiling / ...
+ ✓ Compiled / in 4s (508 modules)
+ GET / 200 in 4310ms
+ ✓ Compiled in 341ms (239 modules)
+ ✓ Compiled in 189ms (239 modules)
+ ✓ Compiled in 111ms (239 modules)
+ ✓ Compiled in 241ms (476 modules)
+ ✓ Compiled /test in 269ms (480 modules)
+ GET /test 200 in 476ms
+[?25h
