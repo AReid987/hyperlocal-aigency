@@ -2,12 +2,9 @@ import CityScanner from '@/components/3d/CityScanner';
 
 export default function Home() {
   return (
-    <>
-      {/* 3D City Background */}
-      <CityScanner />
-      
+    <CityScanner>
       {/* Scrollable Content Overlay */}
-      <main className="relative w-full" style={{ zIndex: 10 }}>
+      <main className="w-full">
         <section 
           id="hero" 
           className="min-h-screen flex items-center justify-center px-4 sm:px-8 lg:px-16 bg-transparent"
@@ -24,7 +21,7 @@ export default function Home() {
 
         <section 
           id="hunt" 
-          className="min-h-screen flex items-center justify-center px-4 sm:px-8 lg:px-16 bg-black bg-opacity-50"
+          className="min-h-screen flex items-center justify-center px-4 sm:px-8 lg:px-16 bg-black bg-opacity-20"
         >
           <div className="max-w-6xl mx-auto">
             <h2 className="text-4xl sm:text-5xl mb-6 text-zinc-100">
@@ -38,7 +35,7 @@ export default function Home() {
 
         <section 
           id="audit" 
-          className="min-h-screen flex items-center justify-center px-4 sm:px-8 lg:px-16 bg-black bg-opacity-60"
+          className="min-h-screen flex items-center justify-center px-4 sm:px-8 lg:px-16 bg-black bg-opacity-30"
         >
           <div className="max-w-6xl mx-auto">
             <h2 className="text-4xl sm:text-5xl mb-6 text-zinc-100">
@@ -52,7 +49,7 @@ export default function Home() {
 
         <section 
           id="ghost" 
-          className="min-h-screen flex items-center justify-center px-4 sm:px-8 lg:px-16 bg-black bg-opacity-70"
+          className="min-h-screen flex items-center justify-center px-4 sm:px-8 lg:px-16 bg-black bg-opacity-40"
         >
           <div className="max-w-6xl mx-auto">
             <h2 className="text-4xl sm:text-5xl mb-6 text-zinc-100">
@@ -66,7 +63,7 @@ export default function Home() {
 
         <section 
           id="infrastructure" 
-          className="min-h-screen flex items-center justify-center px-4 sm:px-8 lg:px-16 bg-black bg-opacity-80"
+          className="min-h-screen flex items-center justify-center px-4 sm:px-8 lg:px-16 bg-black bg-opacity-50"
         >
           <div className="max-w-6xl mx-auto">
             <h2 className="text-4xl sm:text-5xl mb-6 text-zinc-100">
@@ -78,6 +75,6 @@ export default function Home() {
           </div>
         </section>
       </main>
-    </>
+    </CityScanner>
   );
 }
