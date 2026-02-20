@@ -1,5 +1,23 @@
 // Enhanced Buildings Grid Component with optimizations
-function BuildingsGrid() {
+import { useRef, useMemo, useEffect } from 'react';
+import { useFrame } from '@react-three/fiber';
+import * as THREE from 'three';
+import { useScrollStore } from '@/lib/scrollStore';
+
+// Building interface
+interface Building {
+  index: number;
+  position: [number, number, number];
+  height: number;
+  baseColor: string;
+  targetColor: string;
+  currentColor: string;
+  rank: number;
+  originalHeight: number;
+  dissolutionProgress: number;
+}
+
+export function BuildingsGrid() {
   const meshRef = useRef<THREE.InstancedMesh>(null);
   const scrollProgress = useScrollStore((state) => state.scrollProgress);
   const setTargetBuildingPosition = useScrollStore((state) => state.setTargetBuildingPosition);
@@ -86,7 +104,7 @@ function BuildingsGrid() {
     
     buildings.forEach((building) => {
       // Smooth color interpolation
-      let currentColor = new THREE.Color(building.baseColor);
+      const currentColor = new THREE.Color(building.baseColor);
       
       if (scrollProgress >= 0.25) {
         const targetColor = new THREE.Color(building.targetColor);
