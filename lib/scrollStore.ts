@@ -2,15 +2,23 @@ import { create } from 'zustand';
 
 export type ScrollStage = 'Hero' | 'Hunt' | 'Audit' | 'Ghost' | 'Infrastructure';
 
+interface BuildingData {
+  position: [number, number, number];
+  rank: number;
+  targetColor: string;
+}
+
 interface ScrollState {
   scrollProgress: number; // 0-1
   currentStage: ScrollStage;
   isScrolling: boolean;
   targetBuildingPosition: [number, number, number];
+  buildingData: BuildingData[];
   setScrollProgress: (progress: number) => void;
   setCurrentStage: (stage: ScrollStage) => void;
   setIsScrolling: (scrolling: boolean) => void;
   setTargetBuildingPosition: (pos: [number, number, number]) => void;
+  setBuildingData: (data: BuildingData[]) => void;
 }
 
 export const useScrollStore = create<ScrollState>((set, get) => ({
@@ -18,6 +26,7 @@ export const useScrollStore = create<ScrollState>((set, get) => ({
   currentStage: 'Hero',
   isScrolling: false,
   targetBuildingPosition: [0, 0, 0],
+  buildingData: [],
   
   setScrollProgress: (progress: number) => {
     const normalizedProgress = Math.max(0, Math.min(1, progress));
@@ -45,4 +54,5 @@ export const useScrollStore = create<ScrollState>((set, get) => ({
   setCurrentStage: (stage: ScrollStage) => set({ currentStage: stage }),
   setIsScrolling: (scrolling: boolean) => set({ isScrolling: scrolling }),
   setTargetBuildingPosition: (pos: [number, number, number]) => set({ targetBuildingPosition: pos }),
+  setBuildingData: (data: BuildingData[]) => set({ buildingData: data }),
 }));

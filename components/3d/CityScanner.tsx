@@ -2,9 +2,10 @@
 
 import React, { useRef, useMemo, useEffect, Suspense, useState } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import { ScrollControls, useScroll } from '@react-three/drei';
+import { ScrollControls } from '@react-three/drei';
 import * as THREE from 'three';
 import { useScrollStore } from '@/lib/scrollStore';
+import ParticleFlow from './ParticleFlow';
 
 // Building data interface
 interface Building {
@@ -29,7 +30,8 @@ class ThreeErrorBoundary extends React.Component<
     this.state = { hasError: false };
   }
 
-  static getDerivedStateFromError(error: Error) {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  static getDerivedStateFromError(_error: Error) {
     return { hasError: true };
   }
 
@@ -117,6 +119,7 @@ function BuildingsGrid() {
   const meshRef = useRef<THREE.InstancedMesh>(null);
   const scrollProgress = useScrollStore((state) => state.scrollProgress);
   const setTargetBuildingPosition = useScrollStore((state) => state.setTargetBuildingPosition);
+  const setBuildingData = useScrollStore((state) => state.setBuildingData);
   const frameCount = useRef(0);
   
   const buildings = useMemo(() => {
@@ -167,7 +170,13 @@ function BuildingsGrid() {
     if (target) {
       setTargetBuildingPosition(target.position);
     }
-  }, [buildings, setTargetBuildingPosition]);
+    // Extract building data for ParticleFlow
+    setBuildingData(buildings.map(b => ({
+      position: b.position,
+      rank: b.rank,
+      targetColor: b.targetColor,
+    })));
+  }, [buildings, setTargetBuildingPosition, setBuildingData]);
 
   useFrame((state) => {
     if (!meshRef.current) return;
@@ -189,7 +198,7 @@ function BuildingsGrid() {
     const quaternion = new THREE.Quaternion();
     
     buildings.forEach((building) => {
-      let currentColor = new THREE.Color(building.baseColor);
+      const currentColor = new THREE.Color(building.baseColor);
       if (scrollProgress >= 0.25) {
         const targetColor = new THREE.Color(building.targetColor);
         currentColor.lerp(targetColor, Math.min(1, colorTransitionProgress));
@@ -401,6 +410,22 @@ function NetworkMesh() {
   );
 }
 
+// Scene content component that includes all 3D elements
+function SceneContent() {
+  const buildingData = useScrollStore((state) => state.buildingData);
+  
+  return (
+    <>
+      <CameraController />
+      <BuildingsGrid />
+      <ParticleFlow buildingPositions={buildingData} />
+      <ScannerSweep />
+      <DataFlow />
+      <NetworkMesh />
+    </>
+  );
+}
+
 // Main CityScanner Component with Error Handling
 export default function CityScanner({ children }: { children?: React.ReactNode }) {
   const setScrollProgress = useScrollStore((state) => state.setScrollProgress);
@@ -411,7 +436,7 @@ export default function CityScanner({ children }: { children?: React.ReactNode }
       const canvas = document.createElement('canvas');
       const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
       if (!gl) setWebglSupported(false);
-    } catch (e) { setWebglSupported(false); }
+    } catch { setWebglSupported(false); }
     
     const handleScroll = () => {
       const scrollTop = window.scrollY;
@@ -441,7 +466,7 @@ export default function CityScanner({ children }: { children?: React.ReactNode }
       <div className="fixed inset-0 bg-void flex items-center justify-center">
         <div className="text-center text-zinc-300">
           <h3 className="text-xl mb-2">WebGL Not Supported</h3>
-          <p className="text-sm text-zinc-400">Your browser doesn't support WebGL required for 3D rendering</p>
+          <p className="text-sm text-zinc-400">Your browser doesn&apos;t support WebGL required for 3D rendering</p>
           <div className="mt-8">{children}</div>
         </div>
       </div>
@@ -461,11 +486,7 @@ export default function CityScanner({ children }: { children?: React.ReactNode }
             <ambientLight intensity={0.6} />
             <pointLight position={[10, 10, 10]} intensity={1} />
             <ScrollControls speed={1} damping={0.1}>
-              <CameraController />
-              <BuildingsGrid />
-              <ScannerSweep />
-              <DataFlow />
-              <NetworkMesh />
+              <SceneContent />
             </ScrollControls>
           </Suspense>
         </Canvas>
