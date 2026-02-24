@@ -1,5 +1,11 @@
 import type { ScrollStage } from './scrollStore';
 
+export interface CTA {
+  text: string;
+  href: string;
+  variant: 'primary' | 'secondary' | 'ghost';
+}
+
 export interface SectionContent {
   id: string;
   stage: ScrollStage;
@@ -7,7 +13,8 @@ export interface SectionContent {
   subtitle?: string;
   description: string;
   stats?: { value: string; label: string }[];
-  cta?: { text: string; href: string; variant: 'primary' | 'secondary' | 'ghost' };
+  cta?: CTA;
+  color: 'neon' | 'danger' | 'neutral';
 }
 
 export const CONTENT_SECTIONS: SectionContent[] = [
@@ -23,6 +30,7 @@ export const CONTENT_SECTIONS: SectionContent[] = [
       { value: '<50ms', label: 'Response Time' },
     ],
     cta: { text: 'Begin Scan', href: '#hunt', variant: 'primary' },
+    color: 'neon',
   },
   {
     id: 'hunt',
@@ -36,6 +44,7 @@ export const CONTENT_SECTIONS: SectionContent[] = [
       { value: '∞', label: 'Coverage' },
     ],
     cta: { text: 'View Capabilities', href: '#audit', variant: 'secondary' },
+    color: 'neon',
   },
   {
     id: 'audit',
@@ -49,6 +58,7 @@ export const CONTENT_SECTIONS: SectionContent[] = [
       { value: '24/7', label: 'Monitoring' },
     ],
     cta: { text: 'See Process', href: '#ghost', variant: 'secondary' },
+    color: 'neon',
   },
   {
     id: 'ghost',
@@ -62,6 +72,7 @@ export const CONTENT_SECTIONS: SectionContent[] = [
       { value: 'Auto', label: 'Filtering' },
     ],
     cta: { text: 'Explore Results', href: '#infrastructure', variant: 'secondary' },
+    color: 'danger',
   },
   {
     id: 'infrastructure',
@@ -70,6 +81,7 @@ export const CONTENT_SECTIONS: SectionContent[] = [
     subtitle: 'Operational Architecture',
     description: 'What remains is a map of verified autonomous systems—a network of intelligent infrastructure ready for integration, analysis, and deployment. This is the foundation: validated, secure, and operating at the edge of what\'s possible.',
     cta: { text: 'Get Started', href: '#contact', variant: 'primary' },
+    color: 'neon',
   },
 ];
 
