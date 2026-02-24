@@ -105,6 +105,21 @@ h1, h2, h3 {
   .animate-border-pulse {
     animation: borderPulse 3s ease-in-out infinite;
   }
+
+  /* Animation delay utilities for staggered effects */
+  .animation-delay-100 { animation-delay: 100ms; }
+  .animation-delay-200 { animation-delay: 200ms; }
+  .animation-delay-300 { animation-delay: 300ms; }
+  .animation-delay-400 { animation-delay: 400ms; }
+  .animation-delay-500 { animation-delay: 500ms; }
+  
+  /* Staggered animation utilities */
+  .animate-fade-in { animation-delay: 0.1s; }
+  .animate-slide-up-delay-1 { animation-delay: 0.1s; }
+  .animate-slide-up-delay-2 { animation-delay: 0.2s; }
+  .animate-slide-up-delay-3 { animation-delay: 0.3s; }
+  .animate-slide-up-delay-4 { animation-delay: 0.4s; }
+  .animate-slide-up-delay-5 { animation-delay: 0.5s; }
 }
 
 @keyframes fadeIn {
@@ -198,5 +213,14 @@ h1, h2, h3 {
   }
   to {
     width: 100%;
+  }
+}
+
+@keyframes glowPulse {
+  0%, 100% {
+    box-shadow: 0 0 5px rgba(0, 240, 255, 0.3), 0 0 20px rgba(0, 240, 255, 0.1);
+  }
+  50% {
+    box-shadow: 0 0 15px rgba(0, 240, 255, 0.5), 0 0 40px rgba(0, 240, 255, 0.2);
   }
 }
