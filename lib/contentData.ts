@@ -1,7 +1,8 @@
-// Content data for Void Reactor scrollytelling sections
+import type { ScrollStage } from './scrollStore';
 
 export interface SectionContent {
   id: string;
+  stage: ScrollStage;
   title: string;
   subtitle?: string;
   description: string;
@@ -12,6 +13,7 @@ export interface SectionContent {
 export const CONTENT_SECTIONS: SectionContent[] = [
   {
     id: 'hero',
+    stage: 'Hero',
     title: 'The Void Reactor',
     subtitle: 'Autonomous Infrastructure Discovery',
     description: 'Navigate the digital void. We scan, analyze, and validate autonomous systems across the infrastructure landscape—identifying anomalies, verifying operational integrity, and mapping the hidden networks that power the next generation of AI-driven services.',
@@ -24,6 +26,7 @@ export const CONTENT_SECTIONS: SectionContent[] = [
   },
   {
     id: 'hunt',
+    stage: 'Hunt',
     title: 'The Hunt',
     subtitle: 'Target Acquisition & Classification',
     description: 'In the vast digital landscape, identifying autonomous systems requires precision and speed. Our scanners penetrate the noise, isolating high-value targets based on behavioral signatures, API patterns, and operational fingerprints. Every scan reveals the architecture of intelligent systems operating in the wild.',
@@ -36,6 +39,7 @@ export const CONTENT_SECTIONS: SectionContent[] = [
   },
   {
     id: 'audit',
+    stage: 'Audit',
     title: 'The Audit',
     subtitle: 'Real-Time Verification Protocol',
     description: 'Validation is not a checkpoint—it\'s a continuous process. Our audit systems flow through every detected entity, cross-referencing operational patterns, security compliance, and behavioral baselines. False positives dissolve under scrutiny. Only the legitimate autonomous systems remain.',
@@ -48,6 +52,7 @@ export const CONTENT_SECTIONS: SectionContent[] = [
   },
   {
     id: 'ghost',
+    stage: 'Ghost',
     title: 'The Ghost',
     subtitle: 'Disqualification Cascade',
     description: 'Not every system survives the audit. Anomalous patterns, security vulnerabilities, and behavioral inconsistencies trigger cascading disqualification. These ghosts—shadows of false positives and compromised entities—fade into the void, leaving only verified autonomous infrastructure visible.',
@@ -60,6 +65,7 @@ export const CONTENT_SECTIONS: SectionContent[] = [
   },
   {
     id: 'infrastructure',
+    stage: 'Infrastructure',
     title: 'The Infrastructure',
     subtitle: 'Operational Architecture',
     description: 'What remains is a map of verified autonomous systems—a network of intelligent infrastructure ready for integration, analysis, and deployment. This is the foundation: validated, secure, and operating at the edge of what\'s possible.',

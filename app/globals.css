@@ -42,6 +42,41 @@ h1, h2, h3 {
     border: 1px solid rgba(161, 161, 170, 0.2);
     border-radius: 0.5rem;
   }
+
+  .glass-card-neon {
+    background: rgba(0, 240, 255, 0.05);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(0, 240, 255, 0.2);
+    border-radius: 0.5rem;
+  }
+
+  .glass-card-danger {
+    background: rgba(244, 63, 94, 0.05);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(244, 63, 94, 0.2);
+    border-radius: 0.5rem;
+  }
+
+  .neon-glow {
+    box-shadow: 0 0 20px rgba(0, 240, 255, 0.4), 0 0 60px rgba(0, 240, 255, 0.1);
+  }
+
+  .danger-glow {
+    box-shadow: 0 0 20px rgba(244, 63, 94, 0.4), 0 0 60px rgba(244, 63, 94, 0.1);
+  }
+
+  .text-glow-neon {
+    text-shadow: 0 0 20px rgba(0, 240, 255, 0.8), 0 0 40px rgba(0, 240, 255, 0.4);
+  }
+
+  .text-glow-danger {
+    text-shadow: 0 0 20px rgba(244, 63, 94, 0.8), 0 0 40px rgba(244, 63, 94, 0.4);
+  }
+
+  .border-glow-neon {
+    border-color: rgba(0, 240, 255, 0.6);
+    box-shadow: 0 0 8px rgba(0, 240, 255, 0.3), inset 0 0 8px rgba(0, 240, 255, 0.05);
+  }
   
   .animate-fade-in {
     animation: fadeIn 0.5s ease-out forwards;
@@ -57,6 +92,18 @@ h1, h2, h3 {
   
   .animate-scan-line {
     animation: scanLine 3s linear infinite;
+  }
+
+  .animate-flicker {
+    animation: flicker 4s ease-in-out infinite;
+  }
+
+  .animate-data-stream {
+    animation: dataStream 2s linear infinite;
+  }
+
+  .animate-border-pulse {
+    animation: borderPulse 3s ease-in-out infinite;
   }
 }
 
@@ -95,5 +142,61 @@ h1, h2, h3 {
   }
   100% {
     transform: translateX(100%);
+  }
+}
+
+@keyframes flicker {
+  0%, 90%, 100% {
+    opacity: 1;
+  }
+  91% {
+    opacity: 0.8;
+  }
+  93% {
+    opacity: 1;
+  }
+  95% {
+    opacity: 0.6;
+  }
+  97% {
+    opacity: 1;
+  }
+}
+
+@keyframes dataStream {
+  0% {
+    background-position: 0% 0%;
+  }
+  100% {
+    background-position: 0% 100%;
+  }
+}
+
+@keyframes borderPulse {
+  0%, 100% {
+    border-color: rgba(0, 240, 255, 0.2);
+  }
+  50% {
+    border-color: rgba(0, 240, 255, 0.6);
+  }
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes revealWidth {
+  from {
+    width: 0;
+  }
+  to {
+    width: 100%;
   }
 }

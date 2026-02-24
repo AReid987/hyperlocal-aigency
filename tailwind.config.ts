@@ -30,6 +30,43 @@ const config: Config = {
         mono: ['var(--font-jetbrains-mono)', 'monospace'],
         sans: ['var(--font-inter)', 'sans-serif'],
       },
+      keyframes: {
+        fadeIn: {
+          '0%': { opacity: '0' },
+          '100%': { opacity: '1' },
+        },
+        slideUp: {
+          '0%': { opacity: '0', transform: 'translateY(20px)' },
+          '100%': { opacity: '1', transform: 'translateY(0)' },
+        },
+        slideInLeft: {
+          '0%': { opacity: '0', transform: 'translateX(-30px)' },
+          '100%': { opacity: '1', transform: 'translateX(0)' },
+        },
+        pulseGlow: {
+          '0%, 100%': { boxShadow: '0 0 5px rgba(0, 240, 255, 0.3)' },
+          '50%': { boxShadow: '0 0 20px rgba(0, 240, 255, 0.6)' },
+        },
+        borderPulse: {
+          '0%, 100%': { borderColor: 'rgba(0, 240, 255, 0.2)' },
+          '50%': { borderColor: 'rgba(0, 240, 255, 0.6)' },
+        },
+        flicker: {
+          '0%, 90%, 100%': { opacity: '1' },
+          '91%': { opacity: '0.8' },
+          '93%': { opacity: '1' },
+          '95%': { opacity: '0.6' },
+          '97%': { opacity: '1' },
+        },
+      },
+      animation: {
+        'fade-in': 'fadeIn 0.5s ease-out forwards',
+        'slide-up': 'slideUp 0.6s ease-out forwards',
+        'slide-in-left': 'slideInLeft 0.6s ease-out forwards',
+        'pulse-glow': 'pulseGlow 2s ease-in-out infinite',
+        'border-pulse': 'borderPulse 3s ease-in-out infinite',
+        'flicker': 'flicker 4s ease-in-out infinite',
+      },
     },
   },
   plugins: [],
