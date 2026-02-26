@@ -62,6 +62,52 @@ const config: Config = {
           '0%, 100%': { boxShadow: '0 0 5px rgba(0, 240, 255, 0.3), 0 0 20px rgba(0, 240, 255, 0.1)' },
           '50%': { boxShadow: '0 0 15px rgba(0, 240, 255, 0.5), 0 0 40px rgba(0, 240, 255, 0.2)' },
         },
+        glowPulseDanger: {
+          '0%, 100%': { boxShadow: '0 0 5px rgba(244, 63, 94, 0.3), 0 0 20px rgba(244, 63, 94, 0.1)' },
+          '50%': { boxShadow: '0 0 15px rgba(244, 63, 94, 0.5), 0 0 40px rgba(244, 63, 94, 0.2)' },
+        },
+        borderGlowNeon: {
+          '0%, 100%': { 
+            borderColor: 'rgba(0, 240, 255, 0.3)',
+            boxShadow: '0 0 5px rgba(0, 240, 255, 0.2), inset 0 0 5px rgba(0, 240, 255, 0.05)'
+          },
+          '50%': { 
+            borderColor: 'rgba(0, 240, 255, 0.7)',
+            boxShadow: '0 0 15px rgba(0, 240, 255, 0.4), inset 0 0 10px rgba(0, 240, 255, 0.1)'
+          },
+        },
+        borderGlowDanger: {
+          '0%, 100%': { 
+            borderColor: 'rgba(244, 63, 94, 0.3)',
+            boxShadow: '0 0 5px rgba(244, 63, 94, 0.2), inset 0 0 5px rgba(244, 63, 94, 0.05)'
+          },
+          '50%': { 
+            borderColor: 'rgba(244, 63, 94, 0.7)',
+            boxShadow: '0 0 15px rgba(244, 63, 94, 0.4), inset 0 0 10px rgba(244, 63, 94, 0.1)'
+          },
+        },
+        filterGlow: {
+          '0%, 100%': { 
+            backdropFilter: 'blur(12px)',
+            boxShadow: '0 0 10px rgba(0, 240, 255, 0.1)'
+          },
+          '50%': { 
+            backdropFilter: 'blur(16px)',
+            boxShadow: '0 0 25px rgba(0, 240, 255, 0.3)'
+          },
+        },
+        dataStream: {
+          '0%': { backgroundPosition: '0% 0%' },
+          '100%': { backgroundPosition: '0% 100%' },
+        },
+        scanLine: {
+          '0%': { transform: 'translateX(-100%)' },
+          '100%': { transform: 'translateX(100%)' },
+        },
+        revealWidth: {
+          from: { width: '0' },
+          to: { width: '100%' },
+        },
       },
       animation: {
         'fade-in': 'fadeIn 0.6s ease-in forwards',
@@ -71,6 +117,21 @@ const config: Config = {
         'border-pulse': 'borderPulse 3s ease-in-out infinite',
         'flicker': 'flicker 4s ease-in-out infinite',
         'glow-pulse': 'glowPulse 2s ease-in-out infinite',
+        'glow-pulse-danger': 'glowPulseDanger 2s ease-in-out infinite',
+        'border-glow-neon': 'borderGlowNeon 3s ease-in-out infinite',
+        'border-glow-danger': 'borderGlowDanger 3s ease-in-out infinite',
+        'filter-glow': 'filterGlow 4s ease-in-out infinite',
+        'data-stream': 'dataStream 2s linear infinite',
+        'scan-line': 'scanLine 3s linear infinite',
+        'reveal-width': 'revealWidth 0.5s ease-out forwards',
+      },
+      boxShadow: {
+        'glow-cyan': '0 0 20px rgba(0, 240, 255, 0.5), 0 0 40px rgba(0, 240, 255, 0.2), 0 0 60px rgba(0, 240, 255, 0.1)',
+        'glow-cyan-sm': '0 0 10px rgba(0, 240, 255, 0.4), 0 0 20px rgba(0, 240, 255, 0.2)',
+        'glow-cyan-lg': '0 0 30px rgba(0, 240, 255, 0.6), 0 0 60px rgba(0, 240, 255, 0.3), 0 0 90px rgba(0, 240, 255, 0.15)',
+        'glow-red': '0 0 20px rgba(244, 63, 94, 0.5), 0 0 40px rgba(244, 63, 94, 0.2), 0 0 60px rgba(244, 63, 94, 0.1)',
+        'glow-red-sm': '0 0 10px rgba(244, 63, 94, 0.4), 0 0 20px rgba(244, 63, 94, 0.2)',
+        'glow-red-lg': '0 0 30px rgba(244, 63, 94, 0.6), 0 0 60px rgba(244, 63, 94, 0.3), 0 0 90px rgba(244, 63, 94, 0.15)',
       },
     },
   },

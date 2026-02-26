@@ -6,6 +6,10 @@ import { ScrollControls } from '@react-three/drei';
 import * as THREE from 'three';
 import { useScrollStore } from '@/lib/scrollStore';
 import ParticleFlow from './ParticleFlow';
+import GlowingBuildings from './GlowingBuilding';
+import GlowingNetwork from './GlowingNetwork';
+import BloomEffect from './BloomEffect';
+import { useDeviceCapabilities } from '@/lib/performanceUtils';
 
 interface Building {
   index: number;
@@ -121,6 +125,7 @@ function BuildingGlows({ buildings }: { buildings: Building[] }) {
   const scrollProgress = useScrollStore((state) => state.scrollProgress);
   const meshRef = useRef<THREE.InstancedMesh>(null);
   const frameCount = useRef(0);
+  const capabilities = useDeviceCapabilities();
 
   const topBuildings = useMemo(() => buildings.filter(b => b.rank <= 20), [buildings]);
 
@@ -145,7 +150,7 @@ function BuildingGlows({ buildings }: { buildings: Building[] }) {
 
     topBuildings.forEach((building, i) => {
       const pulse = 0.85 + Math.sin(time * 2 + i * 0.7) * 0.15;
-      const glowScale = colorProgress * pulse;
+      const glowScale = colorProgress * pulse * capabilities.glowIntensity;
       const glowHeight = building.originalHeight * 1.05 * colorProgress;
 
       matrix.compose(
@@ -157,7 +162,7 @@ function BuildingGlows({ buildings }: { buildings: Building[] }) {
 
       const isTop3 = building.rank <= 3;
       const glowColor = new THREE.Color(isTop3 ? '#f43f5e' : '#00f0ff');
-      glowColor.multiplyScalar(colorProgress * 0.4);
+      glowColor.multiplyScalar(colorProgress * 0.4 * capabilities.glowIntensity);
       meshRef.current!.setColorAt(i, glowColor);
     });
 
@@ -315,6 +320,12 @@ function BuildingsGrid() {
         <meshBasicMaterial wireframe vertexColors />
       </instancedMesh>
       <BuildingGlows buildings={buildings} />
+      <GlowingBuildings buildings={buildings.map(b => ({
+        position: b.position,
+        rank: b.rank,
+        originalHeight: b.originalHeight,
+        targetColor: b.targetColor
+      }))} />
     </>
   );
 }
@@ -354,15 +365,24 @@ function CameraController() {
         targetBuildingPos[2] + 5 - easeProgress * 3
       ];
       targetLookAt = [targetBuildingPos[0], targetBuildingPos[1] + 1, targetBuildingPos[2]];
+    } else if (scrollProgress < 0.9) {
+      const ghostProgress = (scrollProgress - 0.75) / 0.15;
+      const easeProgress = ghostProgress * ghostProgress * (3 - 2 * ghostProgress);
+      targetPosition = [
+        targetBuildingPos[0] + 1 + easeProgress * 14,
+        4 + easeProgress * 4,
+        2 + easeProgress * 18
+      ];
+      targetLookAt = [0, 0, 0];
     } else {
-      const infraProgress = (scrollProgress - 0.75) / 0.25;
+      const infraProgress = (scrollProgress - 0.9) / 0.1;
       const easeProgress = infraProgress * infraProgress * (3 - 2 * infraProgress);
       targetPosition = [
         15 + easeProgress * 10,
         8 + easeProgress * 4,
         20 + easeProgress * 15
       ];
-      targetLookAt = [0, 0, 0];
+      targetLookAt = [0, 4, 0];
     }
 
     camera.position.lerp(new THREE.Vector3(...targetPosition), 0.02);
@@ -416,10 +436,13 @@ function DataFlow() {
         positionsAttr.array[i3 + 1] = initialPositions[i3 + 1] + (targetBuildingPos[1] - initialPositions[i3 + 1]) * t + Math.cos(time + i * 0.5) * 0.2;
         positionsAttr.array[i3 + 2] = initialPositions[i3 + 2] + (targetBuildingPos[2] - initialPositions[i3 + 2]) * t + Math.sin(time * 0.5 + i) * 0.2;
       } else {
-        const nodeIndex = i % NETWORK_NODES.length;
-        const targetX = NETWORK_NODES[nodeIndex][0];
-        const targetY = NETWORK_NODES[nodeIndex][1];
-        const targetZ = NETWORK_NODES[nodeIndex][2];
+        const networkNodes: [number, number, number][] = [
+          [-10, 6, -5], [8, 4, 2], [0, 8, -8], [-6, 2, 6], [5, 7, 8], [12, 3, -3]
+        ];
+        const nodeIndex = i % networkNodes.length;
+        const targetX = networkNodes[nodeIndex][0];
+        const targetY = networkNodes[nodeIndex][1];
+        const targetZ = networkNodes[nodeIndex][2];
         positionsAttr.array[i3] += (targetX - positionsAttr.array[i3]) * 0.02;
         positionsAttr.array[i3 + 1] += (targetY - positionsAttr.array[i3 + 1]) * 0.02;
         positionsAttr.array[i3 + 2] += (targetZ - positionsAttr.array[i3 + 2]) * 0.02;
@@ -448,7 +471,7 @@ function DataFlow() {
   );
 }
 
-const NETWORK_NODES: [number, number, number][] = [
+const LEGACY_NETWORK_NODES: [number, number, number][] = [
   [-8, 5, 0],
   [8, 3, 0],
   [0, 7, -5],
@@ -490,20 +513,19 @@ function NetworkMesh() {
   const scrollProgress = useScrollStore((state) => state.scrollProgress);
   if (scrollProgress < 0.75) return null;
 
-  const networkProgress = (scrollProgress - 0.75) / 0.25;
+  const networkProgress = (scrollProgress - 0.75) / 0.15;
   const easeProgress = networkProgress * networkProgress * (3 - 2 * networkProgress);
 
-  // Build all connection pairs
   const connections: [number, number][] = [];
-  for (let i = 0; i < NETWORK_NODES.length; i++) {
-    for (let j = i + 1; j < NETWORK_NODES.length; j++) {
+  for (let i = 0; i < LEGACY_NETWORK_NODES.length; i++) {
+    for (let j = i + 1; j < LEGACY_NETWORK_NODES.length; j++) {
       connections.push([i, j]);
     }
   }
 
   return (
     <group>
-      {NETWORK_NODES.map((pos, i) => (
+      {LEGACY_NETWORK_NODES.map((pos, i) => (
         <NetworkNode
           key={i}
           position={pos}
@@ -515,8 +537,8 @@ function NetworkMesh() {
       ))}
 
       {connections.map(([a, b], i) => {
-        const nodeA = NETWORK_NODES[a];
-        const nodeB = NETWORK_NODES[b];
+        const nodeA = LEGACY_NETWORK_NODES[a];
+        const nodeB = LEGACY_NETWORK_NODES[b];
         const distFactor = 1 - (i / connections.length) * 0.5;
         return (
           <line key={i}>
@@ -536,85 +558,7 @@ function NetworkMesh() {
           </line>
         );
       })}
-
-      <AnimatedNetworkParticles nodes={NETWORK_NODES} progress={easeProgress} />
     </group>
-  );
-}
-
-function AnimatedNetworkParticles({ nodes, progress }: { 
-  nodes: [number, number, number][];
-  progress: number;
-}) {
-  const pointsRef = useRef<THREE.Points>(null);
-  const count = 200;
-  const nodeAssignments = useRef<number[]>([]);
-  const particleLifes = useRef<Float32Array>(new Float32Array(count));
-  const particleSpeeds = useRef<Float32Array>(new Float32Array(count));
-
-  const positions = useMemo(() => {
-    const pos = new Float32Array(count * 3);
-    const assignments: number[] = [];
-    for (let i = 0; i < count; i++) {
-      const nodeIdx = i % nodes.length;
-      assignments.push(nodeIdx);
-      const n = nodes[nodeIdx];
-      pos[i * 3] = n[0] + (Math.random() - 0.5) * 3;
-      pos[i * 3 + 1] = n[1] + (Math.random() - 0.5) * 3;
-      pos[i * 3 + 2] = n[2] + (Math.random() - 0.5) * 3;
-      particleLifes.current[i] = Math.random();
-      particleSpeeds.current[i] = 0.3 + Math.random() * 0.7;
-    }
-    nodeAssignments.current = assignments;
-    return pos;
-  }, [nodes]);
-
-  useFrame((_, delta) => {
-    if (!pointsRef.current || progress < 0.1) return;
-    const posAttr = pointsRef.current.geometry.attributes.position;
-
-    for (let i = 0; i < count; i++) {
-      particleLifes.current[i] += delta * particleSpeeds.current[i];
-      if (particleLifes.current[i] > 1) {
-        particleLifes.current[i] = 0;
-        const srcIdx = nodeAssignments.current[i];
-        const dstIdx = (srcIdx + 1 + Math.floor(Math.random() * (nodes.length - 1))) % nodes.length;
-        nodeAssignments.current[i] = dstIdx;
-      }
-
-      const srcNode = nodes[nodeAssignments.current[i]];
-      const dstIdx = (nodeAssignments.current[i] + 1) % nodes.length;
-      const dstNode = nodes[dstIdx];
-      const t = particleLifes.current[i];
-
-      posAttr.array[i * 3] = srcNode[0] + (dstNode[0] - srcNode[0]) * t;
-      posAttr.array[i * 3 + 1] = srcNode[1] + (dstNode[1] - srcNode[1]) * t + Math.sin(t * Math.PI) * 1.5;
-      posAttr.array[i * 3 + 2] = srcNode[2] + (dstNode[2] - srcNode[2]) * t;
-    }
-
-    posAttr.needsUpdate = true;
-  });
-
-  return (
-    <points ref={pointsRef}>
-      <bufferGeometry>
-        <bufferAttribute
-          attach="attributes-position"
-          count={count}
-          array={positions}
-          itemSize={3}
-        />
-      </bufferGeometry>
-      <pointsMaterial
-        size={0.12}
-        color="#00f0ff"
-        transparent
-        opacity={progress * 0.8}
-        sizeAttenuation={true}
-        blending={THREE.AdditiveBlending}
-        depthWrite={false}
-      />
-    </points>
   );
 }
 
@@ -629,6 +573,8 @@ function SceneContent() {
       <ScannerSweep />
       <DataFlow />
       <NetworkMesh />
+      <GlowingNetwork />
+      <BloomEffect />
     </>
   );
 }

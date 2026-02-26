@@ -1,9 +1,10 @@
 'use client';
 
-import React, { useRef, useMemo } from 'react';
+import React, { useRef, useMemo, useEffect } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 import { useScrollStore } from '@/lib/scrollStore';
+import { useDeviceCapabilities } from '@/lib/performanceUtils';
 
 interface ParticleFlowProps {
   buildingPositions: {
@@ -17,33 +18,39 @@ class FlowParticle {
   position: THREE.Vector3;
   velocity: THREE.Vector3;
   target: THREE.Vector3;
+  sourceStart: THREE.Vector3;
   life: number;
   maxLife: number;
   active: boolean;
   color: THREE.Color;
   arcHeight: number;
   arcPhase: number;
+  size: number;
 
-  constructor(startPos: THREE.Vector3, targetPos: THREE.Vector3, color: THREE.Color) {
-    this.position = startPos.clone();
-    this.target = targetPos.clone();
+  constructor() {
+    this.position = new THREE.Vector3(0, 0, 0);
     this.velocity = new THREE.Vector3(0, 0, 0);
+    this.target = new THREE.Vector3(0, 0, 0);
+    this.sourceStart = new THREE.Vector3(0, 0, 0);
     this.life = 0;
     this.maxLife = 1.5 + Math.random() * 1.5;
     this.active = false;
-    this.color = color.clone();
+    this.color = new THREE.Color('#00f0ff');
     this.arcHeight = 3 + Math.random() * 4;
     this.arcPhase = Math.random() * Math.PI;
+    this.size = 0.1 + Math.random() * 0.15;
   }
 
   spawn(startPos: THREE.Vector3, targetPos: THREE.Vector3, color: THREE.Color) {
     this.position.copy(startPos);
+    this.sourceStart.copy(startPos);
     this.target.copy(targetPos);
     this.color.copy(color);
     this.life = 0;
     this.active = true;
     this.arcHeight = 3 + Math.random() * 4;
     this.arcPhase = Math.random() * Math.PI;
+    this.size = 0.1 + Math.random() * 0.15;
     this.velocity.set(
       (Math.random() - 0.5) * 0.3,
       Math.random() * 0.3,
@@ -51,7 +58,7 @@ class FlowParticle {
     );
   }
 
-  update(deltaTime: number, startPos: THREE.Vector3): boolean {
+  update(deltaTime: number): boolean {
     if (!this.active) return false;
 
     this.life += deltaTime;
@@ -62,10 +69,8 @@ class FlowParticle {
 
     const t = this.life / this.maxLife;
 
-    // Arc trajectory: lerp position with parabolic height
-    this.position.lerpVectors(startPos, this.target, t);
+    this.position.lerpVectors(this.sourceStart, this.target, t);
     this.position.y += Math.sin(t * Math.PI) * this.arcHeight;
-    // Add slight lateral drift
     this.position.x += Math.sin(t * Math.PI * 2 + this.arcPhase) * 0.3;
 
     return true;
@@ -78,14 +83,17 @@ class FlowParticle {
   }
 }
 
-const PARTICLE_COUNT = 400;
-
 export default function ParticleFlow({ buildingPositions }: ParticleFlowProps) {
   const scrollProgress = useScrollStore((state) => state.scrollProgress);
+  const capabilities = useDeviceCapabilities();
   const pointsRef = useRef<THREE.Points>(null);
   const particlesRef = useRef<FlowParticle[]>([]);
   const spawnTimerRef = useRef(0);
   const startPositionsRef = useRef<THREE.Vector3[]>([]);
+
+  const particleCount = useMemo(() => {
+    return capabilities.recommendedParticleCount;
+  }, [capabilities.recommendedParticleCount]);
 
   const { sourceBuildings, targetBuildings } = useMemo(() => {
     const sources = buildingPositions.filter(b => b.rank <= 3);
@@ -93,26 +101,22 @@ export default function ParticleFlow({ buildingPositions }: ParticleFlowProps) {
     return { sourceBuildings: sources, targetBuildings: targets };
   }, [buildingPositions]);
 
-  useMemo(() => {
+  useEffect(() => {
     const particles: FlowParticle[] = [];
     const starts: THREE.Vector3[] = [];
-    for (let i = 0; i < PARTICLE_COUNT; i++) {
-      particles.push(new FlowParticle(
-        new THREE.Vector3(0, 0, 0),
-        new THREE.Vector3(0, 0, 0),
-        new THREE.Color('#00f0ff')
-      ));
+    for (let i = 0; i < particleCount; i++) {
+      particles.push(new FlowParticle());
       starts.push(new THREE.Vector3(0, 0, 0));
     }
     particlesRef.current = particles;
     startPositionsRef.current = starts;
-  }, []);
+  }, [particleCount]);
 
   const { positions, colors, sizes } = useMemo(() => {
-    const pos = new Float32Array(PARTICLE_COUNT * 3);
-    const col = new Float32Array(PARTICLE_COUNT * 3);
-    const siz = new Float32Array(PARTICLE_COUNT);
-    for (let i = 0; i < PARTICLE_COUNT; i++) {
+    const pos = new Float32Array(particleCount * 3);
+    const col = new Float32Array(particleCount * 3);
+    const siz = new Float32Array(particleCount);
+    for (let i = 0; i < particleCount; i++) {
       pos[i * 3 + 1] = -100;
       col[i * 3] = 0;
       col[i * 3 + 1] = 0.94;
@@ -120,18 +124,19 @@ export default function ParticleFlow({ buildingPositions }: ParticleFlowProps) {
       siz[i] = 0.1 + Math.random() * 0.15;
     }
     return { positions: pos, colors: col, sizes: siz };
-  }, []);
+  }, [particleCount]);
 
   useFrame((_, delta) => {
     if (!pointsRef.current) return;
 
     const positionsAttr = pointsRef.current.geometry.attributes.position;
     const colorsAttr = pointsRef.current.geometry.attributes.color;
+    const sizesAttr = pointsRef.current.geometry.attributes.size;
 
     if (scrollProgress < 0.5 || scrollProgress > 0.75) {
-      for (let i = 0; i < PARTICLE_COUNT; i++) {
+      for (let i = 0; i < particleCount; i++) {
         positionsAttr.array[i * 3 + 1] = -100;
-        if (particlesRef.current[i].active) {
+        if (particlesRef.current[i]?.active) {
           particlesRef.current[i].active = false;
         }
       }
@@ -146,12 +151,12 @@ export default function ParticleFlow({ buildingPositions }: ParticleFlowProps) {
     if (spawnTimerRef.current > spawnRate && sourceBuildings.length > 0 && targetBuildings.length > 0) {
       spawnTimerRef.current = 0;
 
-      const spawnBatch = auditIntensity > 0.5 ? 3 : 1;
+      const spawnBatch = auditIntensity > 0.5 ? Math.min(3, Math.floor(capabilities.recommendedParticleCount / 100)) : 1;
       let spawned = 0;
 
-      for (let p = 0; p < PARTICLE_COUNT && spawned < spawnBatch; p++) {
+      for (let p = 0; p < particleCount && spawned < spawnBatch; p++) {
         const particle = particlesRef.current[p];
-        if (!particle.active) {
+        if (particle && !particle.active) {
           const sourceIdx = Math.floor(Math.random() * sourceBuildings.length);
           const targetIdx = Math.floor(Math.random() * targetBuildings.length);
 
@@ -184,19 +189,22 @@ export default function ParticleFlow({ buildingPositions }: ParticleFlowProps) {
       }
     }
 
-    for (let i = 0; i < PARTICLE_COUNT; i++) {
+    for (let i = 0; i < particleCount; i++) {
       const particle = particlesRef.current[i];
-      particle.update(delta, startPositionsRef.current[i]);
+      if (!particle) continue;
+
+      particle.update(delta);
 
       if (particle.active) {
         positionsAttr.array[i * 3] = particle.position.x;
         positionsAttr.array[i * 3 + 1] = particle.position.y;
         positionsAttr.array[i * 3 + 2] = particle.position.z;
 
-        const opacity = particle.getOpacity();
+        const opacity = particle.getOpacity() * capabilities.glowIntensity;
         colorsAttr.array[i * 3] = particle.color.r * opacity;
         colorsAttr.array[i * 3 + 1] = particle.color.g * opacity;
         colorsAttr.array[i * 3 + 2] = particle.color.b * opacity;
+        sizesAttr.array[i] = particle.size * capabilities.glowIntensity;
       } else {
         positionsAttr.array[i * 3 + 1] = -100;
         colorsAttr.array[i * 3] = 0;
@@ -207,6 +215,7 @@ export default function ParticleFlow({ buildingPositions }: ParticleFlowProps) {
 
     positionsAttr.needsUpdate = true;
     colorsAttr.needsUpdate = true;
+    sizesAttr.needsUpdate = true;
   });
 
   if (scrollProgress < 0.45 || scrollProgress > 0.8) return null;
@@ -222,25 +231,25 @@ export default function ParticleFlow({ buildingPositions }: ParticleFlowProps) {
       <bufferGeometry>
         <bufferAttribute
           attach="attributes-position"
-          count={PARTICLE_COUNT}
+          count={particleCount}
           array={positions}
           itemSize={3}
         />
         <bufferAttribute
           attach="attributes-color"
-          count={PARTICLE_COUNT}
+          count={particleCount}
           array={colors}
           itemSize={3}
         />
         <bufferAttribute
           attach="attributes-size"
-          count={PARTICLE_COUNT}
+          count={particleCount}
           array={sizes}
           itemSize={1}
         />
       </bufferGeometry>
       <pointsMaterial
-        size={0.18}
+        size={0.18 * capabilities.glowIntensity}
         vertexColors
         transparent
         opacity={opacity}
