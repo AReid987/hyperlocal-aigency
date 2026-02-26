@@ -1,0 +1,17 @@
+# Sentry Configuration
+# Copy this file to .sentryclirc and fill in your values
+# This file should NOT be committed to git
+
+[defaults]
+# Your organization slug from Sentry
+org = your-org-slug
+
+# Your project slug from Sentry
+project = your-project-slug
+
+# Your authentication token (create at https://sentry.io/settings/auth-tokens/)
+auth_token = your-auth-token-here
+
+[auth]
+# Alternative: You can also set SENTRY_AUTH_TOKEN environment variable
+# instead of using auth_token in this file
