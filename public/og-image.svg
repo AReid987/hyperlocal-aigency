@@ -1,0 +1,41 @@
+<svg width="1200" height="630" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#09090b;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#18181b;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="neon" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#00f0ff;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#00d4ff;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  <rect width="100%" height="100%" fill="url(#bg)"/>
+  
+  <!-- Grid pattern -->
+  <g stroke="#27272a" stroke-width="1" opacity="0.3">
+    <line x1="0" y1="157.5" x2="1200" y2="157.5"/>
+    <line x1="0" y1="315" x2="1200" y2="315"/>
+    <line x1="0" y1="472.5" x2="1200" y2="472.5"/>
+    <line x1="300" y1="0" x2="300" y2="630"/>
+    <line x1="600" y1="0" x2="600" y2="630"/>
+    <line x1="900" y1="0" x2="900" y2="630"/>
+  </g>
+  
+  <!-- Title -->
+  <text x="600" y="250" font-family="monospace" font-size="72" font-weight="700" fill="url(#neon)" text-anchor="middle">THE VOID REACTOR</text>
+  
+  <!-- Subtitle -->
+  <text x="600" y="340" font-family="sans-serif" font-size="28" fill="#a1a1aa" text-anchor="middle">Navigate the digital void</text>
+  
+  <!-- Tagline -->
+  <text x="600" y="400" font-family="sans-serif" font-size="20" fill="#71717a" text-anchor="middle">Autonomous infrastructure discovery at the edge of what's possible</text>
+  
+  <!-- Brand -->
+  <text x="600" y="520" font-family="monospace" font-size="18" fill="#00f0ff" text-anchor="middle">HYPERLOCAL.AIGENCY</text>
+  
+  <!-- Decorative elements -->
+  <circle cx="100" cy="315" r="4" fill="#00f0ff" opacity="0.6"/>
+  <circle cx="1100" cy="315" r="4" fill="#00f0ff" opacity="0.6"/>
+  <circle cx="600" cy="100" r="3" fill="#f43f5e" opacity="0.5"/>
+  <circle cx="600" cy="530" r="3" fill="#f43f5e" opacity="0.5"/>
+</svg>

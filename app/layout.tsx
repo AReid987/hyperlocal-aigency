@@ -64,7 +64,7 @@ export const metadata: Metadata = {
     url: process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000",
     images: [
       {
-        url: "/og-image.png",
+        url: "/og-image.svg",
         width: 1200,
         height: 630,
         alt: "The Void Reactor - Navigate the Digital Void",
@@ -75,7 +75,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "The Void Reactor | Hyperlocal.Aigency",
     description: "Navigate the digital void. Autonomous infrastructure discovery at the edge of what's possible.",
-    images: ["/og-image.png"],
+    images: ["/og-image.svg"],
     creator: "@hyperlocal_ai",
   },
   robots: {
